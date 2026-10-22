@@ -60,7 +60,7 @@ impl Default for Whiteboard {
             strokes: Vec::new(),
             current: None,
             drawing: false,
-            color_idx: 2, // Black by default
+            color_idx: 0, // Red by default
             scale: 1.0,
             offset: Vec2::ZERO,
             show_palette: true,
