@@ -1,0 +1,19 @@
+[package]
+name = "whiteboard"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+eframe = { version = "0.37.0", default-features = false, features = [
+    "glow",
+    "x11",
+    "wayland",
+    "default_fonts",
+] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"
