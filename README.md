@@ -25,6 +25,7 @@ Native egui gives faster launch and a far smaller footprint for this exact use c
 - Freehand drawing with the mouse (drag to draw, click for a dot)
 - Six colors: Red, Blue, Black, Green, Purple, Orange
 - Infinite canvas with **pan** and **zoom**
+- Undo with `Ctrl`+`Z` (removes the newest line first)
 - Zero persistence — nothing touches disk
 - `Esc` quits immediately, no "save changes?" prompt
 
@@ -35,6 +36,7 @@ Native egui gives faster launch and a far smaller footprint for this exact use c
 | Draw | Left-drag |
 | Dot | Left-click |
 | Pick color | Click a swatch, or `1`–`6`, or `R` `B` `K` `G` `P` `O` |
+| Undo last line | `Ctrl` + `Z` (press repeatedly, newest line first) |
 | Pan | Hold `Space` + move the mouse |
 | Zoom | `Ctrl` + mouse wheel (zooms toward the cursor) |
 | Hide / show the on-screen chrome | `Tab` |
@@ -44,6 +46,12 @@ Color keys map to the palette order: `1`/`R` Red · `2`/`B` Blue · `3`/`K` Blac
 `4`/`G` Green · `5`/`P` Purple · `6`/`O` Orange.
 
 `Tab` hides the palette and the hint line so you are left with a completely blank canvas.
+
+`Ctrl`+`Z` removes the most recently drawn line, then the next most recent, and so on
+(newest → oldest). Undo simply peels the on-screen strokes list rather than keeping a
+separate history stack, so it costs no extra memory and needs no 15–20 line threshold —
+you can keep pressing it all the way back to a blank canvas. There is intentionally no
+redo and no save.
 
 ## Prerequisites
 

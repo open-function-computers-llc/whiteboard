@@ -120,6 +120,16 @@ impl Whiteboard {
         self.drawing = false;
     }
 
+    /// Undo removes the newest committed stroke (newest -> oldest). We keep no separate
+    /// history buffer — undo just peels the existing strokes list — so it costs no extra
+    /// memory and needs no depth cap. Blocked mid-drag so you never erase an in-flight line.
+    fn undo(&mut self) {
+        if self.drawing {
+            return;
+        }
+        self.strokes.pop();
+    }
+
     fn draw_stroke(&self, painter: &egui::Painter, s: &StrokeData) {
         let w = (s.width_world * self.scale).max(0.6);
         let pts: Vec<Pos2> = s.points.iter().map(|p| self.to_screen(*p)).collect();
@@ -195,6 +205,12 @@ impl eframe::App for Whiteboard {
         }
 
         let mut repaint = false;
+
+        // ---- Ctrl/Cmd + Z: undo the most recent stroke (newest -> oldest) ----
+        if ctx.input(|i| (i.modifiers.ctrl || i.modifiers.command) && i.key_pressed(Key::Z)) {
+            self.undo();
+            repaint = true;
+        }
 
         // ---- zoom (Ctrl + wheel; egui folds the Ctrl modifier into zoom_delta) ----
         if zoom != 1.0 {
@@ -309,7 +325,7 @@ impl Whiteboard {
             .show(ctx, |ui| {
                 ui.label(
                     egui::RichText::new(
-                        "1-6 / R B K G P O color   ·   drag draw   ·   Space pan   ·   Ctrl+Wheel zoom   ·   Tab hide   ·   Esc quit",
+                        "1-6 / R B K G P O color   ·   drag draw   ·   Ctrl+Z undo   ·   Space pan   ·   Ctrl+Wheel zoom   ·   Tab hide   ·   Esc quit",
                     )
                     .size(12.0)
                     .color(HINT_FG),
