@@ -105,7 +105,7 @@ impl Whiteboard {
             let far = cur
                 .points
                 .last()
-                .map_or(true, |l| (w - *l).length() >= min);
+                .is_none_or(|l| (w - *l).length() >= min);
             if far {
                 cur.points.push(w);
             }
@@ -113,11 +113,10 @@ impl Whiteboard {
     }
 
     fn finish_stroke(&mut self) {
-        if let Some(cur) = self.current.take() {
-            if !cur.points.is_empty() {
+        if let Some(cur) = self.current.take()
+            && !cur.points.is_empty() {
                 self.strokes.push(cur);
             }
-        }
         self.drawing = false;
     }
 
@@ -221,20 +220,18 @@ impl eframe::App for Whiteboard {
         } else {
             let over_palette = self.show_palette
                 && pointer
-                .map_or(false, |p| self.palette_rect(ctx).expand(6.0).contains(p));
+                .is_some_and(|p| self.palette_rect(ctx).expand(6.0).contains(p));
 
-            if !over_palette && left_pressed {
-                if let Some(p) = pointer {
+            if !over_palette && left_pressed
+                && let Some(p) = pointer {
                     self.begin_stroke(p);
                     repaint = true;
                 }
-            }
-            if left_down && self.drawing {
-                if let Some(p) = pointer {
+            if left_down && self.drawing
+                && let Some(p) = pointer {
                     self.extend_stroke(p);
                     repaint = true;
                 }
-            }
             if left_released && self.drawing {
                 self.finish_stroke();
                 repaint = true;
